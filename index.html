@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>復習チェック</title>
+<style id="css">
+:root{
+  --bg:#FFFFFF; --ink:#1C1C1E; --sub:#8A8A8E; --line:#E5E5EA; --soft:#F2F2F7; --red:#D93A30; --ok:#34A853;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#000000; --ink:#F2F2F7; --sub:#8E8E93; --line:#2C2C2E; --soft:#1C1C1E; --red:#FF5A4F; --ok:#4CD06A; }
+}
+:root[data-theme="dark"]{ --bg:#000000; --ink:#F2F2F7; --sub:#8E8E93; --line:#2C2C2E; --soft:#1C1C1E; --red:#FF5A4F; --ok:#4CD06A; }
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",system-ui,sans-serif;font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;padding:8px 16px 28px}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+input{font-size:16px}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;border:none;background:var(--soft);border-radius:999px;padding:0 14px;min-height:34px;font-size:14px;white-space:nowrap;color:var(--sub)}
+.tab[aria-current="true"]{background:var(--ink);color:var(--bg)}
+.sheet{padding:0}
+.head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.head h1{font-size:20px;margin:0;line-height:1.4;word-break:break-all}
+.link{background:none;border:none;color:var(--sub);font-size:14px;padding:8px 0}
+.label{font-size:13px;color:var(--sub);margin:12px 0 0}
+.counter{display:flex;align-items:center;justify-content:center;gap:16px;margin:4px 0 8px}
+.step{flex:none;width:48px;height:48px;border-radius:50%;border:none;background:var(--soft);font-size:24px;line-height:1;display:grid;place-items:center}
+.step:active{opacity:.6}
+.no{display:flex;align-items:baseline;gap:4px}
+.no span{font-size:18px;color:var(--sub)}
+.no input{width:2.6em;text-align:center;font-size:44px;font-weight:600;line-height:1.1;border:none;background:transparent;padding:0;font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+.no input::-webkit-outer-spin-button,.no input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.addrow{display:flex;gap:6px;margin:8px 0 2px}
+.btn{border:none;background:var(--soft);color:var(--ink);border-radius:10px;padding:0 14px;min-height:44px;font-weight:600;white-space:nowrap;flex:none}
+.btn.solid{background:var(--red);color:#fff}
+.addrow input{flex:1;min-width:0;width:100%;min-height:44px;border:none;border-radius:10px;padding:8px 12px;background:var(--soft)}
+.summary{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--line);gap:8px;flex-wrap:wrap}
+.summary .label{margin:0}
+.summary b{color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;min-height:48px}
+.chip{position:relative;min-width:48px;height:48px;border-radius:10px;border:none;background:var(--red);color:#fff;font-size:18px;font-weight:600;padding:0 8px;font-variant-numeric:tabular-nums}
+.chip.done{background:var(--soft);color:var(--sub);text-decoration:line-through}
+.chip.flash{animation:flash .5s ease 2}
+@keyframes flash{50%{opacity:.4}}
+.chip .x{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:12px;display:grid;place-items:center;text-decoration:none}
+.empty{color:var(--sub);font-size:14px;align-self:center}
+.hint{font-size:12px;color:var(--sub);margin:12px 0 0}
+.editbox{margin-top:8px;padding:12px;border-radius:10px;display:grid;gap:8px;background:var(--soft)}
+.editbox input{border:none;border-radius:8px;padding:8px 12px;background:var(--bg);min-height:44px}
+.editbox .btn{background:var(--bg)}
+.editbox .row{display:flex;gap:8px;flex-wrap:wrap}
+.danger{color:var(--red)!important}
+.bulk{margin-top:12px;padding:12px;border-radius:10px;background:var(--soft);display:grid;gap:8px}
+.bulk textarea{width:100%;min-height:96px;border:none;border-radius:8px;padding:10px 12px;background:var(--bg);font:inherit;font-size:16px;color:inherit;resize:vertical}
+.bulk .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bulk .btn{background:var(--bg)}
+.bulk .btn.solid{background:var(--red);color:#fff}
+.bulk .note{font-size:12px;color:var(--sub);margin:0}
+.bulk .err{font-size:13px;color:var(--red);margin:0}
+.preview{background:var(--bg);border-radius:8px;padding:10px 12px;font-size:14px;line-height:1.7}
+.preview b{font-weight:600}
+.btn:disabled{opacity:.5}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 4px}
+.stat{background:var(--soft);border-radius:12px;padding:10px 6px;text-align:center}
+.stat .v{font-size:26px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
+.stat .v small{font-size:13px;font-weight:600;margin-left:1px}
+.stat .k{font-size:12px;color:var(--sub)}
+.stat.red .v{color:var(--red)}
+.stat.green .v{color:var(--ok)}
+.sec{font-size:15px;font-weight:700;margin:18px 0 0}
+.chip.ok{background:var(--ok)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--sub);margin:6px 0 8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+.map{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:4px}
+.cell{height:36px;border:none;border-radius:6px;padding:0;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.c-todo{background:transparent;color:var(--sub);box-shadow:inset 0 0 0 1px var(--line)}
+.c-did{background:var(--soft);color:var(--ink)}
+.c-bad{background:var(--red);color:#fff}
+.c-ok{background:var(--ok);color:#fff}
+.stats.two{grid-template-columns:repeat(2,1fr)}
+.addrow.gn{align-items:center}
+.addrow.gn .unit{font-size:16px;color:var(--sub);flex:none}
+.addrow.gn input{flex:1 1 0;text-align:center}
+.grp{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.grp:first-of-type{border-top:none;padding-top:0}
+.gname{font-weight:700;font-size:15px;display:flex;align-items:baseline;gap:8px}
+.gname small{font-weight:400;font-size:12px;color:var(--sub)}
+.grp .chips{margin-top:6px;min-height:0}
+.chip.ok{background:var(--ok);color:#fff;text-decoration:none}
+.btn.wide{display:block;width:100%;margin-top:10px}
+.addrow.gn{gap:4px}
+.bulk details{border-top:1px solid var(--line);padding-top:8px}
+.bulk summary{font-size:14px;color:var(--sub);cursor:pointer;padding:4px 0}
+.tpl{white-space:pre-wrap;word-break:break-all;font-family:inherit;font-size:13px;background:var(--bg);border-radius:8px;padding:10px 12px;margin:0 0 8px;-webkit-user-select:text;user-select:text}
+.syncbar{font-size:13px;color:var(--sub);background:var(--soft);border-radius:10px;padding:8px 12px;margin:0 0 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.syncbar.warn{color:var(--red)}
+.syncbar .btn{min-height:36px}
+.dlrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.dlrow .btn{flex:1 1 0}
+.status{text-align:center;font-size:12px;color:var(--sub);margin-top:12px;min-height:1.5em}
+@media (prefers-reduced-motion: reduce){.chip.flash{animation:none}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="application/json" id="state">{"updated":1790383006111,"current":"irmesac","sets":[{"id":"irmesac","name":"問題集 1","wrong":[{"g":1,"n":1,"done":false},{"n":3,"done":false,"g":1},{"g":12,"n":3,"done":true},{"g":12,"n":4,"done":true}],"lastG":12}]}</script>
+<script id="app">(function(){
+  var KEY = 'review-tracker-v2';
+  var CSS = document.getElementById('css').textContent;
+  var APP = document.getElementById('app').textContent;
+  var HEAD = '<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<title>復習チェック</title>\n';
+  var state;
+  try { state = JSON.parse(document.getElementById('state').textContent); } catch(e) { state = null; }
+  if (!state || !Array.isArray(state.sets)) state = {updated:0,current:null,sets:[]};
+  try {
+    var ls = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (ls && Array.isArray(ls.sets) && (ls.updated||0) > (state.updated||0)) { state = ls; var LOCAL_NEWER = true; }
+  } catch(e) {}
+  function uid(){ return Math.random().toString(36).slice(2,9); }
+  function newSet(name){ return {id:uid(), name:name, wrong:[], lastG:1}; }
+  // 旧形式(番号のみ)を「第1」に移す
+  state.sets.forEach(function(s){
+    delete s.no;
+    if (!Array.isArray(s.wrong)) s.wrong = [];
+    s.wrong.forEach(function(w){ if (!(w.g>0)) w.g = 1; });
+    if (!(s.lastG>0)) s.lastG = 1;
+  });
+  if (!state.sets.length) { var s0 = newSet('問題集 1'); state.sets.push(s0); state.current = s0.id; }
+  if (!state.sets.some(function(s){return s.id===state.current;})) state.current = state.sets[0].id;
+
+  var ui = {dl:'', edit:false, flash:null, status:'', msg:'', copied:'', tplOpen:false};
+  var artifactApi = null, timer = null, dirty = (typeof LOCAL_NEWER !== 'undefined');
+  var syncMode = 'checking';
+  var sampleApi = null, canImage = false, bulkFile = null, bulkCtl = null;
+  var bulk = {open:false, text:'', busy:false, err:'', preview:null};
+
+  function esc(t){ return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function cur(){ for (var i=0;i<state.sets.length;i++) if (state.sets[i].id===state.current) return state.sets[i]; return state.sets[0]; }
+  function key(g,n){ return g+'-'+n; }
+  function find(s,g,n){ for (var i=0;i<s.wrong.length;i++){ var w=s.wrong[i]; if (w.g===g && w.n===n) return w; } return null; }
+  function sortW(s){ s.wrong.sort(function(a,b){ return a.g-b.g || a.n-b.n; }); }
+
+  function buildDoc(){
+    var json = JSON.stringify(state).replace(/</g,'\\u003c');
+    return '<!DOCTYPE html>\n<html lang="ja">\n<head>\n' + HEAD + '<style id="css">' + CSS + '</style>\n</head>\n<body>\n<div id="root"></div>\n<script type="application/json" id="state">' + json + '</' + 'script>\n<script id="app">' + APP + '</' + 'script>\n</body>\n</html>\n';
+  }
+  function setStatus(t){ ui.status = t; var el = document.getElementById('status'); if (el) el.textContent = t; var sb = document.querySelector('.syncbar:not(.warn)'); if (sb) sb.textContent = t; }
+  function commit(){
+    state.updated = Date.now();
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+    dirty = true;
+    render();
+    schedule(1500);
+  }
+  function schedule(ms){
+    if (!artifactApi) { setStatus(syncMode==='local' ? 'この端末だけに保存しました(他の端末には同期されません)' : 'この端末に保存しました。同期の準備中…'); render(); return; }
+    clearTimeout(timer); setStatus('保存待ち…');
+    timer = setTimeout(publish, ms);
+  }
+  function publish(){
+    timer = null;
+    if (!dirty || !artifactApi) return;
+    var a = document.activeElement;
+    if (a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA') && document.visibilityState === 'visible') { timer = setTimeout(publish, 1500); return; }
+    dirty = false; setStatus('保存中…');
+    artifactApi.publish(buildDoc()).then(function(){ setStatus('保存しました。他の端末にも反映されます'); render(); }).catch(function(e){
+      dirty = true;
+      if (e && e.code === 'conflict') return;
+      setStatus('同期できませんでした。上のボタンでもう一度保存してください'); render();
+    });
+  }
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden' && dirty && artifactApi) { clearTimeout(timer); publish(); } });
+  window.addEventListener('pagehide', function(){ if (dirty && artifactApi) { clearTimeout(timer); publish(); } });
+  if (!(window.claude && typeof window.claude.use === 'function')) syncMode = 'local';
+  try {
+    if (window.claude && typeof window.claude.use === 'function') {
+      window.claude.use('artifact').then(function(a){ artifactApi = a || null; syncMode = artifactApi ? 'cloud' : 'local'; if (artifactApi && dirty && typeof LOCAL_NEWER === 'undefined') schedule(500); render(); }).catch(function(){ syncMode='local'; render(); });
+      window.claude.use('downloads').then(function(d){ downloadsApi = d || null; render(); }).catch(function(){});
+      window.claude.use('sample').then(function(sm){
+        sampleApi = sm || null;
+        if (!sampleApi) return;
+        sampleApi.limits().then(function(c){ canImage = !!(c && c.images); if (bulk.open) render(); }).catch(function(){});
+        if (bulk.open) render();
+      }).catch(function(){});
+    }
+  } catch(e) {}
+
+  function addRange(g,a,b){
+    g = parseInt(g,10); a = parseInt(a,10); b = parseInt(b,10);
+    if (!(g>0) || !(a>0)) return false;
+    if (!(b>0)) return addWrong(g,a);
+    if (b < a) { var t=a; a=b; b=t; }
+    if (b - a > 499) { alert('一度に追加できるのは500問までです'); return false; }
+    var s = cur(), added = 0;
+    for (var n=a; n<=b; n++){ if (!find(s,g,n)) { s.wrong.push({g:g,n:n,done:false}); added++; } }
+    sortW(s); s.lastG = g;
+    ui.msg = '第'+g+'の'+a+'〜'+b+'を追加しました' + (added < b-a+1 ? '(登録済みの'+(b-a+1-added)+'問はそのまま)' : '');
+    commit(); return true;
+  }
+  function addWrong(g,n){
+    g = parseInt(g,10); n = parseInt(n,10);
+    if (!(g>0) || !(n>0)) return false;
+    var s = cur(), hit = find(s,g,n);
+    if (hit) hit.done = false; else s.wrong.push({g:g, n:n, done:false});
+    sortW(s); s.lastG = g; ui.flash = key(g,n);
+    commit(); return true;
+  }
+
+  // ---- まとめて入力 ----
+  var TEMPLATE = '問題集の復習リストを、下の形式だけで出力してください。説明文やコードブロックは不要です。\n' +
+    '・1行に「第◯ 問題番号 状態」\n' +
+    '・問題番号は「1〜30」のような範囲か、「3,5,7」のようなカンマ区切り\n' +
+    '・状態は「まだ」か「解いた」\n' +
+    '例:\n第1 1〜30 まだ\n第1 3,5,7 解いた\n第2 1〜15 まだ\n\n' +
+    '内容:\n(ここに問題集の章と問題数、解いた問題などを書く)';
+  function localParse(t){
+    var wrong = [], done = [], lastG = null;
+    t = String(t).replace(/[０-９]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); });
+    t.split(/\r?\n/).forEach(function(line){
+      if (!line.trim() || /^\s*#/.test(line)) return;
+      var isDone = /解いた|解いてある|済|OK|ok|✓|✔/.test(line) && !/まだ|未/.test(line);
+      line.split(/(?=第\s*\d)/).forEach(function(seg){
+        var gm = seg.match(/第\s*(\d+)/);
+        var g = gm ? +gm[1] : lastG;
+        if (!g) return;
+        lastG = g;
+        var rest = (gm ? seg.slice(gm.index + gm[0].length) : seg).replace(/[章問のつ]/g, ' ');
+        var re = /(\d+)(?:\s*[〜~～\-–ー−]\s*(\d+))?/g, m;
+        while ((m = re.exec(rest))) {
+          var a = +m[1], b = m[2] ? +m[2] : a; if (b < a) { var x=a; a=b; b=x; }
+          for (var n=a; n<=b && n-a<500; n++) (isDone ? done : wrong).push({g:g, n:n});
+        }
+      });
+    });
+    return {wrong:wrong, done:done};
+  }
+  function pasteRead(){
+    var text = bulk.text.trim();
+    if (!text) { bulk.err = 'Claudeが作った内容を貼り付けてください'; bulk.preview = null; render(); return; }
+    var p = clean(localParse(text));
+    if (!p.wrong.length && !p.done.length) { bulk.preview = null; bulk.err = '読み取れませんでした。「第1 1〜30 まだ」の形になっているか確認してください'; }
+    else { bulk.preview = p; bulk.err = ''; var cnt = p.wrong.length + p.done.length; applyBulk(); ui.msg = cnt + '問を反映しました'; render(); return; }
+    render();
+  }
+  var downloadsApi = null;
+  function ranges(ns){
+    var out = [], i = 0;
+    while (i < ns.length) { var a = ns[i], b = a; while (i+1 < ns.length && ns[i+1] === b+1) { i++; b = ns[i]; } out.push(a===b ? String(a) : a+'〜'+b); i++; }
+    return out.join(',');
+  }
+  function exportText(s){
+    var lines = ['# ' + s.name], gs = {};
+    s.wrong.forEach(function(w){ (gs[w.g] = gs[w.g] || {todo:[], done:[]})[w.done?'done':'todo'].push(w.n); });
+    Object.keys(gs).map(Number).sort(function(a,b){return a-b;}).forEach(function(g){
+      if (gs[g].todo.length) lines.push('第'+g+' '+ranges(gs[g].todo)+' まだ');
+      if (gs[g].done.length) lines.push('第'+g+' '+ranges(gs[g].done)+' 解いた');
+    });
+    return lines.join('\n') + '\n';
+  }
+  function safeName(t){ return String(t).replace(/[\\/:*?"<>|\s]+/g,'_').slice(0,40) || '復習チェック'; }
+  function saveFile(filename, data, mime){
+    if (downloadsApi) {
+      downloadsApi.save({filename: filename, data: data}).then(function(){ ui.dl = 'ダウンロードしました'; render(); }).catch(function(e){
+        ui.dl = (e && e.code === 'cancelled') || (e && e.code === 'declined') ? '' : 'ダウンロードできませんでした'; render();
+      });
+      return;
+    }
+    if (syncMode === 'local') {
+      try {
+        var url = URL.createObjectURL(new Blob([data], {type: mime}));
+        var a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+        setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 1000);
+        ui.dl = 'ダウンロードしました'; render(); return;
+      } catch(e) {}
+    }
+    ui.dl = 'この画面ではダウンロードできません'; render();
+  }
+  function copyTemplate(){
+    function done(ok){ ui.copied = ok ? 'コピーしました。Claudeに貼り付けて使ってください' : '下の文を長押しでコピーしてください'; render(); }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(TEMPLATE).then(function(){done(true);}, function(){done(false);});
+      else done(false);
+    } catch(e) { done(false); }
+  }
+  function clean(r){
+    function arr(a){
+      var seen = {}, res = [];
+      (Array.isArray(a)?a:[]).forEach(function(x){
+        var g = parseInt(x && x.g,10), n = parseInt(x && x.n,10);
+        if (g>0 && n>0 && g<1000 && n<10000 && !seen[key(g,n)]) { seen[key(g,n)] = 1; res.push({g:g,n:n}); }
+      });
+      return res.sort(function(a,b){return a.g-b.g||a.n-b.n;});
+    }
+    return {wrong: arr(r && r.wrong), done: arr(r && r.done)};
+  }
+  function fmt(list){ return list.map(function(x){return '第'+x.g+'の'+x.n;}).join('、'); }
+  function readBulk(){
+    var text = bulk.text.trim();
+    if (!text && !bulkFile) { bulk.err = '内容を入力するか、写真を選んでください'; render(); return; }
+    if (!sampleApi) { pasteRead(); return; }
+    var s = cur();
+    var prompt = 'あなたは問題集の復習記録アプリの入力補助です。問題は「第◯の◯問」(例: 第1の1問、第2の3問)のように、グループ番号 g と問題番号 n の組で表します。\n' +
+      'ユーザーのメモ' + (bulkFile ? 'と写真(問題集の答案や採点の写真)' : '') + 'から、次を読み取ってください。\n' +
+      '- wrong: まだ解いてない問題(これから解く・解き直す問題)の配列\n' +
+      '- done: 解いた問題の配列\n' +
+      '「第2の3〜5」のような範囲は展開してください。グループが省略されている番号は、直前に出てきたグループのものとして扱ってください。どのグループか判断できない番号は入れないでください。\n' +
+      '返答はJSONだけにしてください。例: {"wrong":[{"g":1,"n":1},{"g":2,"n":3}],"done":[{"g":1,"n":5}]}\n\n' +
+      '問題集の名前: ' + s.name + '\n\n' +
+      'ユーザーのメモ:\n' + (text || '(なし。写真だけから読み取ってください)');
+    var opts = {modelTier:'default', cache:false};
+    if (bulkFile && canImage) opts.images = bulkFile;
+    bulkCtl = new AbortController(); opts.signal = bulkCtl.signal;
+    bulk.busy = true; bulk.err = ''; bulk.preview = null; render();
+    sampleApi.json(prompt, opts).then(function(r){
+      bulk.busy = false; bulk.preview = clean(r);
+      if (!bulk.preview.wrong.length && !bulk.preview.done.length) { bulk.preview = null; bulk.err = '問題を読み取れませんでした。「第1の3」のように書いて試してください'; }
+      render();
+    }).catch(function(e){
+      bulk.busy = false;
+      var c = e && e.code;
+      if (c === 'cancelled') bulk.err = '';
+      else if (c === 'not_granted') { var lp = clean(localParse(text)); if (lp.wrong.length) { bulk.preview = lp; bulk.err = 'Claudeの利用が許可されなかったため、「第1の3」の形の書き方だけを読み取りました'; } else bulk.err = 'Claudeの利用が許可されませんでした'; }
+      else if (c === 'rate_limited') bulk.err = '混み合っています。少し待ってからもう一度試してください';
+      else if (c === 'image_rejected') bulk.err = 'この写真は読み込めませんでした。別の写真を選んでください';
+      else bulk.err = '読み取りに失敗しました。もう一度試してください';
+      render();
+    });
+  }
+  function applyBulk(){
+    var p = bulk.preview, s = cur(); if (!p) return;
+    p.wrong.forEach(function(x){ var h = find(s,x.g,x.n); if (h) h.done = false; else s.wrong.push({g:x.g,n:x.n,done:false}); });
+    p.done.forEach(function(x){ var h = find(s,x.g,x.n); if (h) h.done = true; else s.wrong.push({g:x.g,n:x.n,done:true}); });
+    sortW(s);
+    bulk = {open:false, text:'', busy:false, err:'', preview:null}; bulkFile = null;
+    commit();
+  }
+  function bulkHtml(){
+    var h = '<div class="bulk">';
+    h += '<textarea id="bulktext" placeholder="Claudeが作った内容をここに貼り付け&#10;例:&#10;第1 1〜30 まだ&#10;第1 3,5,7 解いた&#10;第2 1〜15 まだ" aria-label="貼り付ける内容">'+esc(bulk.text)+'</textarea>';
+    h += '<div class="row">';
+    if (bulk.busy) h += '<button class="btn solid" disabled>読み取り中…</button><button class="btn" data-act="bulkstop">やめる</button>';
+    else h += '<button class="btn solid" data-act="pasteread">読み込んで反映する</button><button class="btn" data-act="bulkclose">閉じる</button>';
+    h += '</div>';
+    if (bulk.err) h += '<p class="err">'+esc(bulk.err)+'</p>';
+    if (bulk.preview) {
+      var p = bulk.preview;
+      h += '<div class="preview">';
+      if (p.wrong.length) h += '<div>まだ解いてない:<b>'+fmt(p.wrong)+'</b></div>';
+      if (p.done.length) h += '<div>解いた:<b>'+fmt(p.done)+'</b></div>';
+      h += '</div><div class="row"><button class="btn solid" data-act="bulkapply">この内容で反映する</button></div>';
+    }
+    h += '<details'+(ui.tplOpen?' open':'')+' id="tpl"><summary>Claudeへの頼み方(コピー用)</summary>';
+    h += '<p class="note" style="margin:6px 0">この文をClaudeのチャットに貼り、最後の「内容:」の下を書き換えて送ってください。返ってきた文をそのまま上に貼り付けます。</p>';
+    h += '<pre class="tpl">'+esc(TEMPLATE)+'</pre>';
+    h += '<button class="btn" data-act="copytpl">この文をコピー</button>';
+    if (ui.copied) h += '<p class="note" style="margin-top:6px">'+esc(ui.copied)+'</p>';
+    h += '</details>';
+    if (sampleApi) {
+      h += '<details><summary>この画面で直接Claudeに読み取らせる</summary><p class="note" style="margin:6px 0">上の欄に普通の文章を書くか写真を選んで押してください。</p><div class="row">';
+      if (canImage) h += '<label class="btn" style="display:inline-grid;place-items:center">写真を選ぶ<input id="bulkfile" type="file" accept="image/*" hidden></label>';
+      h += '<button class="btn" data-act="bulkread"'+(bulk.busy?' disabled':'')+'>Claudeで読み取る</button></div>';
+      if (bulkFile) h += '<p class="note">'+esc(bulkFile.name||'写真を選択済み')+'</p>';
+      h += '</details>';
+    }
+    return h + '</div>';
+  }
+
+  function render(){
+    var s = cur();
+    var openCount = s.wrong.filter(function(w){return !w.done;}).length;
+    var okCount = s.wrong.length - openCount;
+    var groups = {}, order = [];
+    s.wrong.forEach(function(w){ if (!groups[w.g]) { groups[w.g] = []; order.push(w.g); } groups[w.g].push(w); });
+    order.sort(function(a,b){return a-b;});
+
+    var h = '<div class="wrap"><nav class="tabs" aria-label="問題集">';
+    state.sets.forEach(function(x){ h += '<button class="tab" data-act="tab" data-id="'+x.id+'" aria-current="'+(x.id===s.id)+'">'+esc(x.name)+'</button>'; });
+    h += '<button class="tab add" data-act="newset">+ 追加</button></nav>';
+    if (syncMode==='local') h += '<div class="syncbar warn">この画面では同期できません。記録はこの端末だけに保存されます。同期するにはclaude.aiのリンクから開いてください。</div>';
+    else if (dirty && artifactApi && !timer) h += '<div class="syncbar warn">他の端末に同期されていない記録があります <button class="btn solid" data-act="syncnow">今すぐ保存</button></div>';
+    else if (ui.status) h += '<div class="syncbar">'+esc(ui.status)+'</div>';
+    h += '<section class="sheet"><div class="head"><h1>'+esc(s.name)+'</h1><button class="link" data-act="edit">'+(ui.edit?'完了':'編集')+'</button></div>';
+    if (ui.edit) {
+      h += '<div class="editbox"><label class="label" for="rename" style="margin:0">名前</label><input id="rename" value="'+esc(s.name)+'" maxlength="40"><div class="row"><button class="btn" data-act="rename">名前を変更</button><button class="btn danger" data-act="delset">この問題集を削除</button></div></div>';
+    }
+    h += '<div class="stats two"><div class="stat red"><div class="v">'+openCount+'<small>問</small></div><div class="k">まだ解いてない</div></div>'+
+         '<div class="stat green"><div class="v">'+okCount+'<small>問</small></div><div class="k">解いた</div></div></div>';
+
+    h += '<p class="sec">問題を追加</p><div class="addrow gn">'+
+         '<span class="unit">第</span><input id="ginput" type="number" inputmode="numeric" min="1" value="'+s.lastG+'" aria-label="第何">'+
+         '<span class="unit">の</span><input id="ninput" type="number" inputmode="numeric" min="1" placeholder="問" aria-label="何問目から">'+
+         '<span class="unit">〜</span><input id="n2input" type="number" inputmode="numeric" min="1" placeholder="問" aria-label="何問目まで(まとめて追加するとき)">'+
+         '<button class="btn solid" data-act="add">追加</button></div>'+
+         '<p class="hint" style="margin-top:4px">'+(ui.msg?esc(ui.msg):'1問だけなら「〜」の右は空のまま。範囲を入れるとまとめて追加します')+'</p>';
+    ui.msg = '';
+    h += bulk.open ? bulkHtml() : '<button class="btn wide" data-act="bulkopen">Claudeで作った内容を貼り付けて読み込む</button>';
+
+    h += '<p class="sec">記録</p>';
+    if (!order.length) h += '<p class="empty">まだありません。問題を「第◯の◯」で追加してください</p>';
+    else h += '<div class="legend"><span><i style="background:var(--red)"></i>まだ解いてない</span><span><i style="background:var(--ok)"></i>解いた</span></div>';
+    order.forEach(function(g){
+      var list = groups[g], open = list.filter(function(w){return !w.done;}).length;
+      h += '<div class="grp"><div class="gname">第'+g+'<small>'+(open?'まだ'+open+'問':'すべて解いた')+'</small></div><div class="chips">';
+      list.forEach(function(w){
+        var k = key(w.g,w.n);
+        h += '<button class="chip'+(w.done?' ok':'')+(ui.flash===k?' flash':'')+'" data-act="'+(ui.edit?'delw':'toggle')+'" data-g="'+w.g+'" data-n="'+w.n+'" aria-label="第'+w.g+'の'+w.n+'問 '+(w.done?'解いた':'まだ解いてない')+(ui.edit?' 削除':'')+'">'+w.n+(ui.edit?'<span class="x" aria-hidden="true">×</span>':'')+'</button>';
+      });
+      h += '</div></div>';
+    });
+    if (order.length) h += '<p class="hint">'+(ui.edit?'× の付いた番号をタップすると削除します':'タップで「まだ解いてない(赤)」と「解いた(緑)」が切り替わります')+'</p>';
+    if (downloadsApi || syncMode === 'local') {
+      h += '<p class="sec">ダウンロード</p><div class="dlrow"><button class="btn" data-act="dlhtml">このページ(HTML)</button><button class="btn" data-act="dltxt">記録(テキスト)</button></div>';
+      h += '<p class="hint" style="margin-top:4px">'+(ui.dl ? esc(ui.dl) : 'HTMLは今の記録入りのページです。テキストは「貼り付けて読み込む」でそのまま戻せます')+'</p>';
+    }
+    h += '</section><p class="status" id="status" aria-live="polite">'+esc(ui.status)+'</p></div>';
+    document.getElementById('root').innerHTML = h;
+    ui.flash = null;
+  }
+
+  function doAdd(){
+    var gi = document.getElementById('ginput'), ni = document.getElementById('ninput'), ei = document.getElementById('n2input');
+    if (!ni.value) { ni.focus(); return; }
+    if (addRange(gi.value, ni.value, ei.value)) { var n2 = document.getElementById('ninput'); if (n2) n2.focus(); }
+  }
+
+  document.addEventListener('click', function(e){
+    var b = e.target.closest('[data-act]'); if (!b) return;
+    var s = cur(), act = b.getAttribute('data-act');
+    var bg = +b.getAttribute('data-g'), bn = +b.getAttribute('data-n');
+    if (act==='tab'){ state.current = b.getAttribute('data-id'); ui.edit=false; bulk.preview=null; commit(); }
+    else if (act==='newset'){ var ns = newSet('問題集 '+(state.sets.length+1)); state.sets.push(ns); state.current = ns.id; ui.edit = true; commit(); var r=document.getElementById('rename'); if (r){ r.focus(); r.select(); } }
+    else if (act==='edit'){ ui.edit=!ui.edit; render(); }
+    else if (act==='rename'){ var v=document.getElementById('rename').value.trim(); if (v){ s.name=v; ui.edit=false; commit(); } }
+    else if (act==='delset'){
+      if (!confirm('「'+s.name+'」を削除します。記録も消えます。')) return;
+      state.sets = state.sets.filter(function(x){return x.id!==s.id;});
+      if (!state.sets.length) state.sets.push(newSet('問題集 1'));
+      state.current = state.sets[0].id; ui.edit=false; commit();
+    }
+    else if (act==='add'){ doAdd(); }
+    else if (act==='toggle'){ var w = find(s,bg,bn); if (w){ w.done = !w.done; commit(); } }
+    else if (act==='delw'){ s.wrong = s.wrong.filter(function(w){return !(w.g===bg && w.n===bn);}); commit(); }
+    else if (act==='bulkopen'){ bulk.open=true; render(); var t=document.getElementById('bulktext'); if (t) t.focus(); }
+    else if (act==='bulkclose'){ ui.copied=''; ui.tplOpen=false; bulk={open:false,text:'',busy:false,err:'',preview:null}; bulkFile=null; render(); }
+    else if (act==='bulkread'){ readBulk(); }
+    else if (act==='pasteread'){ pasteRead(); }
+    else if (act==='dlhtml'){ saveFile('復習チェック.html', buildDoc(), 'text/html'); }
+    else if (act==='dltxt'){ saveFile(safeName(s.name)+'.txt', exportText(s), 'text/plain'); }
+    else if (act==='syncnow'){ clearTimeout(timer); timer = null; var ae=document.activeElement; if (ae && ae.blur) ae.blur(); publish(); }
+    else if (act==='copytpl'){ ui.tplOpen = true; copyTemplate(); }
+    else if (act==='bulkstop'){ if (bulkCtl) bulkCtl.abort(); }
+    else if (act==='bulkapply'){ applyBulk(); }
+  });
+  document.addEventListener('toggle', function(e){ if (e.target && e.target.id==='tpl') ui.tplOpen = e.target.open; }, true);
+  document.addEventListener('input', function(e){ if (e.target.id==='bulktext'){ bulk.text = e.target.value; } });
+  document.addEventListener('change', function(e){
+    if (e.target.id==='bulkfile'){ bulkFile = (e.target.files && e.target.files[0]) || null; bulk.preview=null; render(); }
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key!=='Enter') return;
+    if (e.target.id==='ninput' || e.target.id==='n2input'){ e.preventDefault(); doAdd(); }
+    else if (e.target.id==='ginput'){ e.preventDefault(); var n=document.getElementById('ninput'); if (n) n.focus(); }
+    else if (e.target.id==='rename'){ var v=e.target.value.trim(); if (v){ cur().name=v; ui.edit=false; commit(); } }
+  });
+  render();
+})();
+</script>
+</body>
+</html>
